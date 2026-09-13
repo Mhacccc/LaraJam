@@ -1,4 +1,4 @@
-import { ref, get, set, update, runTransaction } from 'firebase/database'
+import { ref, get, update, runTransaction } from 'firebase/database'
 import { db } from '../../lib/firebase/db.js'
 import { serverTimestamp } from '../../lib/firebase/serverTime.js'
 import { generateRoomCode } from '../../utils/roomCode.js'

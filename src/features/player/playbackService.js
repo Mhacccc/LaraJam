@@ -47,6 +47,17 @@ export function writeResume(code, uid, currentPosition) {
   })
 }
 
+/** Host stops playback (pauses and resets position to 0) */
+export function writeStop(code, uid) {
+  return update(ref(db, `rooms/${code}/playback`), {
+    status: 'paused',
+    positionAtUpdate: 0,
+    startedAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    updatedBy: uid,
+  })
+}
+
 /** Host seeks to a new position */
 export function writeSeek(code, uid, position, wasPlaying) {
   return update(ref(db, `rooms/${code}/playback`), {

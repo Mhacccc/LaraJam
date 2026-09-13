@@ -17,13 +17,13 @@ export function useRoom(code) {
 
     // Listen to members
     const membersRef = ref(db, `rooms/${code}/members`)
-    const onMembers = onValue(membersRef, (snap) => {
+    onValue(membersRef, (snap) => {
       setMembers(snap.val() || {})
     })
 
     // Listen to meta (for host changes)
     const metaRef = ref(db, `rooms/${code}/meta`)
-    const onMeta = onValue(metaRef, (snap) => {
+    onValue(metaRef, (snap) => {
       const meta = snap.val()
       if (meta) {
         setIsHost(meta.hostUid === uid)
