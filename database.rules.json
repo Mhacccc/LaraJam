@@ -1,19 +1,24 @@
 {
   "rules": {
+    "admins": {
+      ".read": "auth != null",
+      ".write": false
+    },
+
     "rooms": {
       "$roomCode": {
         ".read": "auth != null",
 
         "meta": {
-          ".write": "auth != null && (!data.exists() || data.child('hostUid').val() === auth.uid || root.child('rooms/'+$roomCode+'/members/'+data.child('hostUid').val()+'/online').val() !== true)",
+          ".write": "auth != null && (!data.exists() || data.child('hostUid').val() === auth.uid || root.child('admins/'+auth.uid).val() === true || root.child('rooms/'+$roomCode+'/members/'+data.child('hostUid').val()+'/online').val() !== true)",
           ".validate": "newData.hasChildren(['hostUid','createdAt'])"
         },
 
         "members": {
           "$uid": {
-            ".write": "auth != null && ($uid === auth.uid || root.child('rooms/'+$roomCode+'/meta/hostUid').val() === auth.uid)",
+            ".write": "auth != null && ($uid === auth.uid || root.child('rooms/'+$roomCode+'/meta/hostUid').val() === auth.uid || root.child('admins/'+auth.uid).val() === true)",
             "name":    { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 20" },
-            "pending": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5" },
+            "pending": { ".validate": "newData.isNumber() && newData.val() >= 0 && (newData.val() <= 5 || root.child('admins/'+auth.uid).val() === true)" },
             "online":  { ".validate": "newData.isBoolean()" },
             "joinedAt": { ".validate": "true" }
           }
@@ -21,13 +26,13 @@
 
         "queue": {
           "$itemId": {
-            ".write": "auth != null && (!data.exists() || data.child('addedBy').val() === auth.uid || root.child('rooms/'+$roomCode+'/meta/hostUid').val() === auth.uid)",
-            ".validate": "newData.hasChildren(['videoId','title','addedBy','addedAt','durationSec']) && newData.child('addedBy').val() === auth.uid && newData.child('durationSec').val() <= 1200 && newData.child('title').val().length <= 120 && newData.parent().parent().child('members').child(auth.uid).child('pending').val() <= 5"
+            ".write": "auth != null && (!data.exists() || data.child('addedBy').val() === auth.uid || root.child('rooms/'+$roomCode+'/meta/hostUid').val() === auth.uid || root.child('admins/'+auth.uid).val() === true)",
+            ".validate": "newData.hasChildren(['videoId','title','addedBy','addedAt','durationSec']) && newData.child('addedBy').val() === auth.uid && newData.child('durationSec').val() <= 1200 && newData.child('title').val().length <= 120 && (newData.parent().parent().child('members').child(auth.uid).child('pending').val() <= 5 || root.child('admins/'+auth.uid).val() === true)"
           }
         },
 
         "playback": {
-          ".write": "auth != null && root.child('rooms/'+$roomCode+'/meta/hostUid').val() === auth.uid",
+          ".write": "auth != null && (root.child('rooms/'+$roomCode+'/meta/hostUid').val() === auth.uid || root.child('admins/'+auth.uid).val() === true)",
           ".validate": "newData.hasChildren(['status','startedAt','positionAtUpdate'])"
         }
       }

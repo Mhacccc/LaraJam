@@ -10,7 +10,9 @@ export default function HostControls({ playerRef }) {
   const uid = useAppStore((s) => s.uid)
   const playback = useAppStore((s) => s.playback)
   const isHost = useAppStore((s) => s.isHost)
+  const isAdmin = useAppStore((s) => s.isAdmin)
   const queue = useAppStore((s) => s.queue)
+  const hasControl = isHost || isAdmin
 
   const handleToggle = useCallback(() => {
     const player = playerRef?.current
@@ -32,7 +34,7 @@ export default function HostControls({ playerRef }) {
     advanceQueue(roomCode, uid, queue).catch(console.error)
   }, [roomCode, uid, queue])
 
-  if (!isHost || !playback || playback.status === 'idle') return null
+  if (!hasControl || !playback || playback.status === 'idle') return null
 
   return (
     <div className="flex items-center gap-2">

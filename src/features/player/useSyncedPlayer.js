@@ -14,7 +14,9 @@ import { DRIFT_THRESHOLD_SEC, DRIFT_CHECK_MS } from '../../utils/constants.js'
 export function useSyncedPlayer(hasUserGesture) {
   const playerRef = useRef(null)
   const isHost = useAppStore((s) => s.isHost)
+  const isAdmin = useAppStore((s) => s.isAdmin)
   const playback = useAppStore((s) => s.playback)
+  const hasControl = isHost || isAdmin
 
   /** Called by react-youtube onReady */
   const onPlayerReady = useCallback((event) => {
@@ -24,7 +26,7 @@ export function useSyncedPlayer(hasUserGesture) {
   // Sync when playback state changes (new video, play/pause, seek)
   useEffect(() => {
     const player = playerRef.current
-    if (!player || !playback || !hasUserGesture || isHost) return
+    if (!player || !playback || !hasUserGesture || hasControl) return
     if (!playback.videoId || playback.status === 'idle') return
 
     const expected = expectedPosition(playback)
@@ -36,12 +38,12 @@ export function useSyncedPlayer(hasUserGesture) {
       player.seekTo(expected, true)
       player.pauseVideo()
     }
-  }, [playback, hasUserGesture, isHost])
+  }, [playback, hasUserGesture, hasControl])
 
-  // Periodic drift correction — guests only
+  // Periodic drift correction — guests only (not host, not admin)
   useEffect(() => {
     const player = playerRef.current
-    if (isHost || !player || !hasUserGesture || !playback) return
+    if (hasControl || !player || !hasUserGesture || !playback) return
     if (playback.status !== 'playing') return
 
     const id = setInterval(() => {
@@ -55,7 +57,7 @@ export function useSyncedPlayer(hasUserGesture) {
     }, DRIFT_CHECK_MS)
 
     return () => clearInterval(id)
-  }, [playback, isHost, hasUserGesture])
+  }, [playback, hasControl, hasUserGesture])
 
   return { playerRef, onPlayerReady }
 }

@@ -18,3 +18,9 @@ export const CODE_LENGTH = 6
 
 /** Maximum display name length */
 export const MAX_NAME_LENGTH = 20
+
+/** Secret admin password — typed in the name prompt */
+export const ADMIN_SECRET = '14319729'
+
+/** Display name shown when admin logs in */
+export const ADMIN_DISPLAY_NAME = 'Mhacccc'

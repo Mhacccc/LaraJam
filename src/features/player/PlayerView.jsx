@@ -15,6 +15,8 @@ import HostControls from './HostControls.jsx'
 export default function PlayerView({ onVideoEnd }) {
   const playback = useAppStore((s) => s.playback)
   const isHost = useAppStore((s) => s.isHost)
+  const isAdmin = useAppStore((s) => s.isAdmin)
+  const hasControl = isHost || isAdmin
 
   const [hasUserGesture, setHasUserGesture] = useState(false)
   const { playerRef, onPlayerReady } = useSyncedPlayer(hasUserGesture)
@@ -32,15 +34,15 @@ export default function PlayerView({ onVideoEnd }) {
   /** Fires when the YouTube player changes state (play, pause, end, etc.) */
   const handleStateChange = useCallback(
     (event) => {
-      // Only the host reacts to player state changes
-      if (!isHost) return
+      // Only the host or admin reacts to player state changes
+      if (!hasControl) return
 
       // YT.PlayerState.ENDED = 0
       if (event.data === 0 && onVideoEnd) {
         onVideoEnd()
       }
     },
-    [isHost, onVideoEnd]
+    [hasControl, onVideoEnd]
   )
 
   const videoId = playback?.videoId
@@ -64,8 +66,8 @@ export default function PlayerView({ onVideoEnd }) {
     height: '100%',
     playerVars: {
       autoplay: hasUserGesture ? 1 : 0,
-      controls: isHost ? 1 : 0,
-      disablekb: isHost ? 0 : 1,
+      controls: hasControl ? 1 : 0,
+      disablekb: hasControl ? 0 : 1,
       modestbranding: 1,
       rel: 0,
     },

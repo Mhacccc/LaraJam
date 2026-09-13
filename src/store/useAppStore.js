@@ -9,6 +9,7 @@ export const useAppStore = create((set) => ({
   // Identity — set once on auth + name prompt
   uid: null,
   displayName: null,
+  isAdmin: false,
 
   // Room — set when creating or joining
   roomCode: null,
@@ -20,7 +21,7 @@ export const useAppStore = create((set) => ({
   playback: null,
 
   // Actions
-  setIdentity: (uid, displayName) => set({ uid, displayName }),
+  setIdentity: (uid, displayName, isAdmin = false) => set({ uid, displayName, isAdmin }),
   setRoom: (roomCode, isHost) => set({ roomCode, isHost }),
   setIsHost: (isHost) => set({ isHost }),
   setMembers: (members) => set({ members }),

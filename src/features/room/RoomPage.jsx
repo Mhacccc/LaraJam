@@ -21,10 +21,12 @@ export default function RoomPage() {
   const displayName = useAppStore((s) => s.displayName)
   const roomCode = useAppStore((s) => s.roomCode)
   const isHost = useAppStore((s) => s.isHost)
+  const isAdmin = useAppStore((s) => s.isAdmin)
   const queue = useAppStore((s) => s.queue)
   const playback = useAppStore((s) => s.playback)
   const setRoom = useAppStore((s) => s.setRoom)
   const leaveRoom = useAppStore((s) => s.leaveRoom)
+  const hasControl = isHost || isAdmin
 
   const [joining, setJoining] = useState(false)
   const [error, setError] = useState(null)
@@ -61,15 +63,15 @@ export default function RoomPage() {
 
   // Auto-start: when queue goes from empty to non-empty while idle
   useEffect(() => {
-    if (!isHost || !code || !uid) return
+    if (!hasControl || !code || !uid) return
     autoStartIfIdle(code, uid, queue, playback).catch(console.error)
-  }, [isHost, code, uid, queue, playback])
+  }, [hasControl, code, uid, queue, playback])
 
-  // Called when the current video ends — host advances to next
+  // Called when the current video ends — host or admin advances to next
   const handleVideoEnd = useCallback(() => {
-    if (!isHost || !code || !uid) return
+    if (!hasControl || !code || !uid) return
     advanceQueue(code, uid, queue).catch(console.error)
-  }, [isHost, code, uid, queue])
+  }, [hasControl, code, uid, queue])
 
   function handleLeave() {
     leaveRoom()
@@ -114,7 +116,7 @@ export default function RoomPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-neutral-800">
         <div className="flex items-center gap-3">
-          <h1 className="text-lg font-bold text-white">YouTube Jam</h1>
+          <h1 className="text-lg font-bold text-white">LaraJam 🤘</h1>
           <button
             onClick={handleCopyCode}
             className="flex items-center gap-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-sm px-3 py-1 rounded-lg border border-neutral-700 transition-colors"

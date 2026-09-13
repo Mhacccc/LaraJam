@@ -7,6 +7,7 @@ export default function SearchResults({ results, onAdd }) {
   const uid = useAppStore((s) => s.uid)
   const displayName = useAppStore((s) => s.displayName)
   const roomCode = useAppStore((s) => s.roomCode)
+  const isAdmin = useAppStore((s) => s.isAdmin)
 
   async function handleAdd(item) {
     try {
@@ -16,7 +17,7 @@ export default function SearchResults({ results, onAdd }) {
         channel: item.channel,
         thumbnail: item.thumbnail,
         durationSec: item.durationSec,
-      })
+      }, { isAdmin })
       if (onAdd) onAdd(item)
     } catch (err) {
       alert(err.message)

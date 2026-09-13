@@ -20,7 +20,7 @@ export default function NamePrompt({ onSubmit }) {
     <div className="flex flex-col items-center justify-center min-h-svh gap-6 p-6">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-4xl font-bold text-white tracking-tight">
-          YouTube Jam
+          LaraJam 🤘
         </h1>
         <p className="text-neutral-400">
           Pick a name to get started

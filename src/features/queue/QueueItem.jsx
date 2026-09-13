@@ -5,9 +5,10 @@ import { removeFromQueue } from './queueService.js'
 export default function QueueItem({ item, index }) {
   const uid = useAppStore((s) => s.uid)
   const isHost = useAppStore((s) => s.isHost)
+  const isAdmin = useAppStore((s) => s.isAdmin)
   const roomCode = useAppStore((s) => s.roomCode)
 
-  const canRemove = item.addedBy === uid || isHost
+  const canRemove = item.addedBy === uid || isHost || isAdmin
 
   async function handleRemove() {
     try {
